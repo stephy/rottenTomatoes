@@ -25,4 +25,4 @@ Completed user stories:
   * [x] Asynchronous image downloading must be implemented using the UIImageView category in the AFNetworking library.
 
 ![alt tag](https://raw.githubusercontent.com/stephy/rottenTomatoes/master/mainview.png)
-![alt tag](https://raw.githubusercontent.com/stephy/rottenTomatoes/master/settingsview.png)
+![alt tag](https://raw.githubusercontent.com/stephy/rottenTomatoes/master/movieview.png)
