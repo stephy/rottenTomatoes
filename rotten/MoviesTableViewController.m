@@ -9,12 +9,15 @@
 #import "MoviesTableViewController.h"
 #import <AFNetworking/UIKit+AFNetworking.h>
 #import "MBProgressHUD.h"
-#import "EGORefreshTableHeaderView.h"
+#import "Reachability.h"
 
-@interface MoviesTableViewController () 
+@interface MoviesTableViewController () {
+    BOOL canRefresh;
+}
 
 //my array of movies
 @property (nonatomic, strong) NSArray *movies;
+@property (weak, nonatomic) IBOutlet UIView *networkErrorView;
 
 @end
 
@@ -32,31 +35,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //hide network error banner
+    [self hideView:YES];
     
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
+//    self.tableView.delegate = self;
+//    self.tableView.dataSource = self;
     
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
     
-        //set up network call
-        NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=g9au4hv6khv6wzvzgt55gpqs";
-        //NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=989898";
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-        
-        //callback
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-            id object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            NSLog(@"%@", object);
-            
-            self.movies = object[@"movies"];
-            
-            //without this table loads empty
-            [self.tableView reloadData];
-            
-        }];
-        
-        
+        [self loadData];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -64,7 +52,12 @@
     });
     
     
-
+    // setup refreshControl for iOS 6
+	if([self respondsToSelector:@selector(refreshControl)]) {
+        self.refreshControl = [[UIRefreshControl alloc] init];
+		[self.refreshControl addTarget:self action:@selector(refreshInvoked:forState:) forControlEvents:UIControlEventValueChanged];
+		canRefresh = YES;
+	}
     
     //load personalized cell
     //registration process
@@ -107,44 +100,6 @@
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 
 #pragma mark - Navigation
 
@@ -159,6 +114,109 @@
     
     mvc.currentMovie = movie;
 
+}
+
+
+#pragma mark - Support for reload getstures
+
+// iOS 6 adds UIRefreshControl (see viewDidLoad: above)
+-(void) refreshInvoked:(id)sender forState:(UIControlState)state {
+    [self loadData];
+    [self.refreshControl endRefreshing];
+}
+
+-(BOOL)canBecomeFirstResponder
+{
+    return !canRefresh;
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    [self becomeFirstResponder];
+    [super viewDidAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [self resignFirstResponder];
+    [super viewWillDisappear:animated];
+}
+
+-(void) motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+    if (motion == UIEventSubtypeMotionShake) {
+        [self loadData];
+    }
+}
+
+-(void)loadData {
+
+    BOOL internet = [self checkInternet];
+    
+    //only load data if there's internet
+    if (internet) {
+        //set up network call
+        NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=g9au4hv6khv6wzvzgt55gpqs";
+        //NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=989898";
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        
+        //callback
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+            id object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            //NSLog(@"%@", object);
+            
+            self.movies = object[@"movies"];
+            
+            //without this table loads empty
+            [self.tableView reloadData];
+            
+        }];
+    }
+
+}
+
+#pragma mark - Support for network error
+
+- (BOOL) connectedToNetwork {
+    
+    Reachability *r = [Reachability reachabilityWithHostName:@"rottentomatoes.com"];
+    
+	NetworkStatus internetStatus = [r currentReachabilityStatus];
+	BOOL internet;
+
+	if ((internetStatus != ReachableViaWiFi) && (internetStatus != ReachableViaWWAN)) {
+		internet = NO;
+	} else {
+		internet = YES;
+	}
+	return internet;
+}
+
+-(BOOL) checkInternet {
+	//Make sure we have internet connectivity
+	if([self connectedToNetwork] != YES) {
+        [self hideView:NO];
+		return NO;
+	} else {
+        [self hideView:YES];
+		return YES;
+	}
+}
+
+
+-(void)hideView: (BOOL)status {
+    if (status) {
+        //resize to 0,0
+        self.networkErrorView.hidden = YES;
+        CGRect newFrame = self.networkErrorView.frame;
+        
+        newFrame.size.height = 0;
+        [self.networkErrorView setFrame:newFrame];
+    }else{
+        //resize to 0, 50
+        self.networkErrorView.hidden = NO;
+        CGRect newFrame = self.networkErrorView.frame;
+        
+        newFrame.size.height = 45;
+        [self.networkErrorView setFrame:newFrame];
+    }
 }
 
 

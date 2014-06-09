@@ -9,11 +9,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-EGOTableViewPullRefresh.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-MBProgressHUD.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -27,22 +22,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>630128CC0D3E456A9FFEEC38</key>
+		<key>6C410F06FBF64A72938D869E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9AFB0A81A6D742D3944AAA4F</key>
+		<key>A7A7641AC34B4E5AB5E63BE6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A975BA1C00F547D0A8A3FD80</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F527DF6CF49D44138988B9CD</key>
+		<key>F9DB2B1EF191438DA8993D25</key>
 		<dict>
 			<key>primary</key>
 			<true/>
