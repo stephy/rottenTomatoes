@@ -36,11 +36,8 @@
 {
     [super viewDidLoad];
     //hide network error banner
-    [self hideView:YES];
-    
-//    self.tableView.delegate = self;
-//    self.tableView.dataSource = self;
-    
+    [self hideNetworkErrorView:YES];
+
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
     
@@ -192,16 +189,16 @@
 -(BOOL) checkInternet {
 	//Make sure we have internet connectivity
 	if([self connectedToNetwork] != YES) {
-        [self hideView:NO];
+        [self hideNetworkErrorView:NO];
 		return NO;
 	} else {
-        [self hideView:YES];
+        [self hideNetworkErrorView:YES];
 		return YES;
 	}
 }
 
 
--(void)hideView: (BOOL)status {
+-(void)hideNetworkErrorView: (BOOL)status {
     if (status) {
         //resize to 0,0
         self.networkErrorView.hidden = YES;

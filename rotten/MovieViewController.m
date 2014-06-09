@@ -36,11 +36,11 @@
 
     NSDictionary *current = self.currentMovie;
     
-    self.synopsisLabel.numberOfLines = 0;
+    
     self.movieTitleLabel.text = [current objectForKey:@"title"];
     self.synopsisLabel.text = [current objectForKey:@"synopsis"];
     
-    [self.synopsisLabel sizeToFit];
+    //[self.view addSubview:self.synopsisLabel];
     
     NSString *posterUrlThumbnail = [current objectForKey:@"posters"][@"original"];
     
@@ -64,5 +64,7 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+
 
 @end
