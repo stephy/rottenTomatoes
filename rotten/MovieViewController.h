@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  MovieViewController.h
 //  rotten
 //
 //  Created by Stephani Alves on 6/8/14.
@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Movie.h"
 
-@interface ViewController : UIViewController
+@interface MovieViewController : UIViewController
+
+@property (nonatomic) Movie *currentMovie;
 
 @end
