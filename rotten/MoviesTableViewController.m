@@ -37,17 +37,8 @@
     [super viewDidLoad];
     //hide network error banner
     [self hideNetworkErrorView:YES];
-
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-    
-        [self loadData];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-        });
-    });
-    
+    //load data
+    [self loadData];
     
     // setup refreshControl for iOS 6
 	if([self respondsToSelector:@selector(refreshControl)]) {
@@ -92,7 +83,6 @@
     
     //Asynchronously load the image
     [cell.posterView setImageWithURL:[NSURL URLWithString:posterUrlThumbnail]];
-    
     
     return cell;
 }
@@ -149,30 +139,41 @@
     
     //only load data if there's internet
     if (internet) {
-        //set up network call
-        NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=g9au4hv6khv6wzvzgt55gpqs";
-        //NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=989898";
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         
-        //callback
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
-            id object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            //NSLog(@"%@", object);
+        //add loader
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
-            self.movies = object[@"movies"];
+            //load data from rotten tomattoes
+            //set up network call
+            NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=g9au4hv6khv6wzvzgt55gpqs";
             
-            //without this table loads empty
-            [self.tableView reloadData];
+            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
             
-        }];
-    }
+            //callback
+            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                id object = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+                //NSLog(@"%@", object);
+                
+                self.movies = object[@"movies"];
+                
+                //without this table loads empty
+                [self.tableView reloadData];
+                
+            }];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+            });
+        });
+        
+    }//end of if
 
 }
 
 #pragma mark - Support for network error
 
 - (BOOL) connectedToNetwork {
-    
     Reachability *r = [Reachability reachabilityWithHostName:@"rottentomatoes.com"];
     
 	NetworkStatus internetStatus = [r currentReachabilityStatus];
@@ -206,6 +207,7 @@
         
         newFrame.size.height = 0;
         [self.networkErrorView setFrame:newFrame];
+        
     }else{
         //resize to 0, 50
         self.networkErrorView.hidden = NO;

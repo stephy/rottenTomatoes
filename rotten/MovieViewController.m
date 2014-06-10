@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *synopsisLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *posterBg;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet UINavigationItem *viewTitle;
 
 @end
 
@@ -34,9 +35,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
-    NSDictionary *current = self.currentMovie;
+    NSDictionary *current = (NSDictionary *)self.currentMovie;
     
-    
+    self.viewTitle.title = [current objectForKey:@"title"];
     self.movieTitleLabel.text = [current objectForKey:@"title"];
     self.synopsisLabel.text = [current objectForKey:@"synopsis"];
     

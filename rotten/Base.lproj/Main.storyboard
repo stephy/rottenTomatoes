@@ -164,6 +164,7 @@
                         <outlet property="posterBg" destination="hlq-XF-T5o" id="hZH-ko-deT"/>
                         <outlet property="scrollView" destination="taU-hM-hot" id="VYC-rc-f8T"/>
                         <outlet property="synopsisLabel" destination="XjE-uI-k1v" id="9iW-Qf-9SV"/>
+                        <outlet property="viewTitle" destination="flC-sL-6We" id="a03-P6-xcj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="s1H-Pb-5pD" userLabel="First Responder" sceneMemberID="firstResponder"/>
