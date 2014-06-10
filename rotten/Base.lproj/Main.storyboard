@@ -31,7 +31,7 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="MovieCell" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" rowHeight="119" id="aID-hq-Nha" customClass="MovieCell">
+                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="MovieCell" selectionStyle="none" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" rowHeight="119" id="aID-hq-Nha" customClass="MovieCell">
                                 <rect key="frame" x="0.0" y="130" width="320" height="119"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="aID-hq-Nha" id="a2n-hB-pYH">
@@ -73,9 +73,18 @@
                     <connections>
                         <outlet property="NetworkErrorView" destination="y7q-wC-EyL" id="oYe-zt-Cxe"/>
                         <outlet property="networkErrorView" destination="y7q-wC-EyL" id="TKy-hF-pjc"/>
+                        <outlet property="searchDisplayController" destination="0hG-8B-YPf" id="gHd-4w-jRM"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JNi-Vh-795" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="0hG-8B-YPf">
+                    <connections>
+                        <outlet property="delegate" destination="5C9-1a-3ZT" id="Lad-WT-xxo"/>
+                        <outlet property="searchContentsController" destination="5C9-1a-3ZT" id="aia-Ya-WIH"/>
+                        <outlet property="searchResultsDataSource" destination="5C9-1a-3ZT" id="6UD-HV-Sur"/>
+                        <outlet property="searchResultsDelegate" destination="5C9-1a-3ZT" id="mVV-nw-qyH"/>
+                    </connections>
+                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="1256" y="78"/>
         </scene>

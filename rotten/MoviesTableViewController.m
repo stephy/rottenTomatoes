@@ -147,7 +147,6 @@
             //load data from rotten tomattoes
             //set up network call
             NSString *url = @"http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=g9au4hv6khv6wzvzgt55gpqs";
-            
             NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
             
             //callback
@@ -161,6 +160,8 @@
                 [self.tableView reloadData];
                 
             }];
+
+            
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [MBProgressHUD hideHUDForView:self.view animated:YES];

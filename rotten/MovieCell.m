@@ -30,6 +30,20 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
+    
+    if(selected){
+        [self setBackgroundColor:[UIColor colorWithRed:0.914 green:0.192 blue:0.278 alpha:1]]; /*#e93147*/
+        self.movieTitleLabel.textColor = [UIColor whiteColor];
+        self.synopsisLabel.textColor = [UIColor whiteColor];
+    } else {
+        [self setBackgroundColor:[UIColor whiteColor]];
+        self.movieTitleLabel.textColor = [UIColor blackColor];
+        self.synopsisLabel.textColor = [UIColor blackColor];
+        
+    }
+    
 }
+
+
 
 @end
